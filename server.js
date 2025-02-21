@@ -13,6 +13,7 @@ connectDB()
 
 // Routes
 app.use('/api/candidate', require('./routes/candidate'))
+app.use('/api/auth', require('./routes/auth'))
 
 // Start the Server
 const PORT = process.env.PORT || 5000
