@@ -7,21 +7,74 @@ const generateToken = (id) => {
 
 // Register User
 exports.registerUser = async (req, res) => {
-  const { username, email, password } = req.body
-  try {
-    const userExists = await User.findOne({ email })
-    if (userExists)
-      return res.status(400).json({ message: 'User already exists' })
+  const {
+    firstName,
+    lastName,
+    dob,
+    gender,
+    email,
+    phone,
+    street,
+    city,
+    postcode,
+    country,
+    department,
+    position,
+    startDate,
+    username,
+    password,
+    confirmPassword,
+    shareCode,
+    terms,
+    gdpr,
+  } = req.body
 
-    const user = await User.create({ username, email, password })
+  try {
+    // Check if user already exists by email or username
+    const existingUser = await User.findOne({ $or: [{ email }, { username }] })
+    if (existingUser) {
+      return res
+        .status(400)
+        .json({ message: 'User with email or username already exists' })
+    }
+
+    // Password match validation
+    if (password !== confirmPassword) {
+      return res.status(400).json({ message: 'Passwords do not match' })
+    }
+
+    // Create user
+    const user = await User.create({
+      firstName,
+      lastName,
+      dob,
+      gender,
+      email,
+      phone,
+      street,
+      city,
+      postcode,
+      country,
+      department,
+      position,
+      startDate,
+      username,
+      password, // This will be hashed via the pre-save hook
+      shareCode,
+      terms,
+      gdpr,
+    })
+
+    // Respond with token and basic info
     res.status(201).json({
       _id: user._id,
       username: user.username,
       email: user.email,
-      token: generateToken(user._id),
+      token: generateToken(user._id), // Assumes you're using JWT
     })
   } catch (err) {
-    res.status(500).json({ message: err.message })
+    console.error(err)
+    res.status(500).json({ message: 'Server Error. Try again later.' })
   }
 }
 
