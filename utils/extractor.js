@@ -1,45 +1,20 @@
-// utils/extractors.js
-const ukCities = [
-  'London',
-  'Manchester',
-  'Birmingham',
-  'Leeds',
-  'Glasgow',
-  'Sheffield',
-  'Bradford',
-  'Liverpool',
-  'Edinburgh',
-  'Bristol',
-  'Cardiff',
-  'Coventry',
-  'Leicester',
-  'Nottingham',
-  'Newcastle',
-  'Hull',
-  'Stoke',
-  'Wolverhampton',
-  'Southampton',
-  'Plymouth',
-  'Derby',
-  'Portsmouth',
-  'Luton',
-  'Sunderland',
-  'Brighton',
-  'Southend-on-Sea',
-]
+const {
+  knownCompanies,
+  companyIndicators,
+  positionKeywords,
+  streetKeywords,
+  countries,
+  ukCities,
+  educationSectionKeywords,
+  companyKeywords,
+} = require('./constants')
 
 const normalizeText = (text) => text.toLowerCase().replace(/[^a-z0-9]/g, '')
-
-const dateLineRegex = /(0?[1-9]|1[0-2])\/\d{4}\s*[-–]\s*(present|\d{4})/i
-
-const locationRegex = /([A-Za-z\s]+),\s*([A-Za-z\s]+)/
-
-const bulletPointRegex = /^[•\-–]/
 
 const extractFullName = (text) => {
   const lines = text
     .split('\n')
-    .map((line) => line.trim())
+    .map((l) => l.trim())
     .filter(Boolean)
   const topLines = lines.slice(0, 10)
   const excluded = ['cv', 'resume', 'contact', 'email', 'phone']
@@ -71,16 +46,6 @@ const extractStreetAndCity = (text) => {
     .map((l) => l.trim())
     .filter(Boolean)
 
-  const streetKeywords = [
-    'street',
-    'road',
-    'lane',
-    'avenue',
-    'drive',
-    'boulevard',
-    'close',
-    'crescent',
-  ]
   let streetCandidates = []
   let cityCandidates = []
 
@@ -104,98 +69,192 @@ const extractStreetAndCity = (text) => {
   return { street, city }
 }
 
+const isLikelyCompany = (line) => {
+  if (!line || line.length > 100) return false
+  const clean = line.trim()
+
+  const hasIndicator = companyKeywords.some((kw) =>
+    clean.toLowerCase().includes(kw.toLowerCase())
+  )
+  const isKnown = companyKeywords.some(
+    (name) => clean.toLowerCase() === name.toLowerCase()
+  )
+  const isCapitalizedShort = /^[A-Z][a-zA-Z]*( [A-Z][a-zA-Z]*)?$/.test(clean)
+
+  return hasIndicator || isKnown || isCapitalizedShort
+}
+
+function isLikelyPosition(line) {
+  return (
+    positionKeywords.some((kw) =>
+      line.toLowerCase().includes(kw.toLowerCase())
+    ) || /^[A-Z][a-z]+(?: [A-Z][a-z]+)*$/.test(line)
+  )
+}
+
 function extractExperience(text) {
   const lines = text
     .split('\n')
     .map((line) => line.trim())
-    .filter((line) => line.length > 0)
+    .filter(Boolean)
 
+  const dateRegex =
+    /((?:\d{1,2}\/\d{4})|(?:[A-Za-z]{3,9} \d{4}))\s*[-–]\s*((?:present)|(?:\d{1,2}\/\d{4})|(?:[A-Za-z]{3,9} \d{4}))/i
+  const locationRegex = /^(.+?),\s*([A-Za-z ]+)$/
   const experiences = []
-  let current = {
-    position: '',
-    company: '',
-    startDate: '',
-    endDate: '',
-    city: '',
-    country: '',
-    description: [],
-  }
+  let current = null
 
-  const dateRegex = /(\d{2}\/\d{4})\s*[-–]\s*(present|\d{2}\/\d{4})/i
-  const locationRegex = /^(.+?),\s*(United Kingdom|UK|Bangladesh|India|USA)$/i
+  const isSectionHeader = (line) =>
+    educationSectionKeywords.some((kw) =>
+      line.toLowerCase().includes(kw.toLowerCase())
+    )
 
-  let stage = 0 // 0 = position, 1 = company, 2 = dates, 3 = location, 4 = description
+  const isValidText = (line) =>
+    line &&
+    !isSectionHeader(line) &&
+    !line.startsWith('•') &&
+    !line.startsWith('-') &&
+    /^[A-Z][\w\s&().-]+$/.test(line)
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i]
-
-    // Check for date
     const dateMatch = line.match(dateRegex)
+
     if (dateMatch) {
-      current.startDate = formatDate(dateMatch[1])
-      current.endDate = formatDate(dateMatch[2])
-      stage = 3
-      continue
-    }
+      if (current) experiences.push(current)
 
-    // Check for location
-    const locMatch = line.match(locationRegex)
-    if (locMatch) {
-      current.city = locMatch[1].trim()
-      current.country = locMatch[2].trim()
-      stage = 4
-      continue
-    }
+      let position = ''
+      let company = ''
 
-    // Description lines (• or regular)
-    if (stage === 4 && (line.startsWith('•') || /^[A-Z]/.test(line))) {
-      current.description.push(line.replace(/^•\s*/, ''))
-      continue
-    }
+      for (let j = i - 1; j >= i - 4 && j >= 0; j--) {
+        const prevLine = lines[j]
 
-    // Move to next entry when a new job title starts after previous is done
-    if (
-      stage === 4 &&
-      /^[A-Z]/.test(line) &&
-      !line.includes('•') &&
-      !dateRegex.test(line) &&
-      !locationRegex.test(line)
-    ) {
-      // Finalize previous
-      if (current.position && current.company && current.startDate) {
-        experiences.push({ ...current })
+        if (!position && isLikelyPosition(prevLine) && isValidText(prevLine)) {
+          position = prevLine
+          continue
+        }
+
+        if (!company && isLikelyCompany(prevLine) && isValidText(prevLine)) {
+          company = prevLine
+          continue
+        }
       }
-      // Reset
+
       current = {
-        position: '',
-        company: '',
-        startDate: '',
-        endDate: '',
+        position: position || '',
+        company: company || '',
+        startDate: formatDate(dateMatch[1]),
+        endDate: /present/i.test(dateMatch[2])
+          ? 'Present'
+          : formatDate(dateMatch[2]),
         city: '',
         country: '',
         description: [],
       }
-      stage = 0
+      continue
     }
 
-    // Assign fields by stage
-    if (stage === 0) {
-      current.position = current.position ? `${current.position} ${line}` : line
-    } else if (stage === 1) {
-      current.company = current.company ? `${current.company} ${line}` : line
-    } else if (stage < 3) {
-      // Build company name (e.g., Garden Travels)
-      current.company = current.company ? `${current.company} ${line}` : line
-      stage = 1
+    if (current) {
+      if (!current.city && !current.country) {
+        const nextLine = lines[i + 1] || ''
+        const currentLine = line.trim()
+        const nextTrimmed = nextLine.trim()
+
+        // Combined city, country on one line
+        const combinedMatch = currentLine.match(/^(.+?),\s*([A-Za-z ]+)$/i)
+        if (combinedMatch && countries.includes(combinedMatch[2].trim())) {
+          current.city = combinedMatch[1].trim()
+          current.country = combinedMatch[2].trim()
+          continue
+        }
+
+        // Two-line location (e.g., "Milton Keynes," + "United Kingdom")
+        if (currentLine.endsWith(',') && countries.includes(nextTrimmed)) {
+          current.city = currentLine.replace(',', '').trim()
+          current.country = nextTrimmed
+          i++ // Skip the next line
+          continue
+        }
+      }
+
+      if (line.startsWith('•') || line.startsWith('-') || line.length > 20) {
+        current.description.push(line.replace(/^•?\s*-?\s*/, '').trim())
+      }
     }
   }
 
-  // Push final if valid
-  if (current.position && current.company && current.startDate) {
+  if (current && current.position && current.company) {
     experiences.push(current)
   }
 
-  return experiences
+  return experiences.filter(
+    (e) => e.position && e.company && e.startDate && e.endDate
+  )
+}
+
+function extractEducation(text) {
+  const lines = text
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+  const educationEntries = []
+  let current = null
+
+  const dateRegex = /(\d{2}\/\d{4})\s*[-–]\s*(present|\d{2}\/\d{4})/i
+  const locationRegex = /^(.+?),\s*([A-Za-z ]+)$/i
+  const sectionStartRegex = new RegExp(
+    `(${educationSectionKeywords.join('|')})`,
+    'i'
+  )
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]
+
+    if (sectionStartRegex.test(line) && current) {
+      educationEntries.push(current)
+      current = null
+      continue
+    }
+
+    const dateMatch = line.match(dateRegex)
+    if (dateMatch) {
+      if (current) educationEntries.push(current)
+
+      current = {
+        position: '',
+        company: '',
+        startDate: formatDate(dateMatch[1]),
+        endDate: formatDate(dateMatch[2]),
+        city: '',
+        country: '',
+        description: [],
+      }
+      continue
+    }
+
+    const locationMatch = line.match(locationRegex)
+    if (current && locationMatch) {
+      const city = locationMatch[1]
+      const country = locationMatch[2]
+      if (countries.includes(country)) {
+        current.city = city
+        current.country = country
+      }
+      continue
+    }
+
+    if (current) {
+      if (!current.position) current.position = line
+      else if (!current.company) current.company = line
+      else current.description.push(line.replace(/^•\s*/, ''))
+    }
+  }
+
+  if (current && current.position && current.company) {
+    educationEntries.push(current)
+  }
+
+  return educationEntries
 }
 
 function formatDate(raw) {
@@ -210,4 +269,5 @@ module.exports = {
   extractPhone,
   extractStreetAndCity,
   extractExperience,
+  extractEducation,
 }

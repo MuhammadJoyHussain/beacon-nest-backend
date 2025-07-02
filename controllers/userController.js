@@ -97,3 +97,40 @@ exports.loginUser = async (req, res) => {
     res.status(500).json({ message: err.message })
   }
 }
+
+exports.updateUserProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id) // req.user.id comes from JWT middleware
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' })
+    }
+
+    const { phone, street, city, postcode, country, shareCode } = req.body
+
+    // Only update allowed fields
+    if (phone) user.phone = phone
+    if (street) user.street = street
+    if (city) user.city = city
+    if (postcode) user.postcode = postcode
+    if (country) user.country = country
+    if (shareCode) user.shareCode = shareCode
+
+    const updatedUser = await user.save()
+
+    res.json({
+      _id: updatedUser._id,
+      username: updatedUser.username,
+      email: updatedUser.email,
+      phone: updatedUser.phone,
+      street: updatedUser.street,
+      city: updatedUser.city,
+      postcode: updatedUser.postcode,
+      country: updatedUser.country,
+      shareCode: updatedUser.shareCode,
+    })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Server error' })
+  }
+}

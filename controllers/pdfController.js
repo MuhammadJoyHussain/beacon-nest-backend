@@ -7,6 +7,7 @@ const {
   extractPhone,
   extractStreetAndCity,
   extractExperience,
+  extractEducation,
 } = require('../utils/extractor')
 
 const parsePdf = async (req, res) => {
@@ -27,7 +28,11 @@ const parsePdf = async (req, res) => {
     const phone = extractPhone(text)
     const { street, city } = extractStreetAndCity(text)
 
-    const employeeExperience = extractExperience(text) // ✅ NEW
+    const employeeExperience = extractExperience(text)
+    console.log(employeeExperience)
+
+    const education = extractEducation(text)
+    console.log(education)
 
     fs.unlinkSync(file.path)
 
@@ -38,7 +43,8 @@ const parsePdf = async (req, res) => {
       phone,
       street,
       city,
-      employeeExperience, //
+      employeeExperience,
+      education,
     })
   } catch (err) {
     console.error('Error parsing PDF:', err)

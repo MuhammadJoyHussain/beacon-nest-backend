@@ -13,6 +13,8 @@ connectDB()
 
 // Routes
 app.use('/api/candidate', require('./routes/candidate'))
+app.use('/api/vacancy', require('./routes/vacancy'))
+app.use('/api/application', require('./routes/application'))
 app.use('/api/auth', require('./routes/auth'))
 app.use('/api', require('./routes/pdf'))
 
