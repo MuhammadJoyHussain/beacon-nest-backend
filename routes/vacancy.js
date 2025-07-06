@@ -7,9 +7,11 @@ const {
   getVacancyById,
   deleteManyVacancy,
   deleteVacancy,
+  getRecommendations,
 } = require('../controllers/vacancyController')
 
 router.get('/', getVacancy)
+router.post('/recommend', getRecommendations)
 router.post('/', createVacancies)
 router.post('/', createVacancy)
 router.delete('/', deleteManyVacancy)

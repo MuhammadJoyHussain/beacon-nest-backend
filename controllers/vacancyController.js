@@ -96,3 +96,16 @@ exports.deleteVacancy = async (req, res) => {
     res.status(500).json({ error: err.message })
   }
 }
+
+exports.getRecommendations = async (req, res) => {
+  try {
+    const { skills } = req.body
+    const response = await axios.post('http://localhost:5000/recommend', {
+      skills,
+    })
+    res.json(response.data)
+  } catch (err) {
+    console.error('Error connecting to ML service:', err)
+    res.status(500).json({ error: 'Unable to get recommendations' })
+  }
+}

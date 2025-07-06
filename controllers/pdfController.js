@@ -29,10 +29,8 @@ const parsePdf = async (req, res) => {
     const { street, city } = extractStreetAndCity(text)
 
     const employeeExperience = extractExperience(text)
-    console.log(employeeExperience)
 
     const education = extractEducation(text)
-    console.log(education)
 
     fs.unlinkSync(file.path)
 
