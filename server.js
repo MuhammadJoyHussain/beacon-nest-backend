@@ -6,12 +6,10 @@ const connectDB = require('./config/db')
 dotenv.config()
 const app = express()
 
-// Connect to DB
-connectDB()
-
 // Middleware
 app.use(express.json())
 app.use(cors())
+connectDB()
 
 // Routes
 app.use('/api/candidate', require('./routes/candidate'))
@@ -22,4 +20,5 @@ app.use('/api/user', require('./routes/userRoutes'))
 app.use('/api/auth', require('./routes/auth'))
 app.use('/api', require('./routes/pdf'))
 
+// Start the Server
 module.exports = app
