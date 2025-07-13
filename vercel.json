@@ -1,5 +1,5 @@
 {
   "version": 2,
-  "builds": [{ "src": "server.hander.js", "use": "@vercel/node" }],
-  "routes": [{ "src": "/(.*)", "dest": "server.handler.js" }]
+  "builds": [{ "src": "server.js", "use": "@vercel/node" }],
+  "routes": [{ "src": "/(.*)", "dest": "server.js" }]
 }
