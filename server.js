@@ -20,4 +20,10 @@ app.use('/api/user', require('./routes/userRoutes'))
 app.use('/api/auth', require('./routes/auth'))
 app.use('/api', require('./routes/pdf'))
 
+const PORT = process.env.PORT || 5000
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on http://localhost:${PORT}`)
+})
+
 module.exports = app
