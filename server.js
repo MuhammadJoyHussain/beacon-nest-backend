@@ -2,7 +2,6 @@ const express = require('express')
 const dotenv = require('dotenv')
 const cors = require('cors')
 const connectDB = require('./config/db')
-const ServerlessHttp = require('serverless-http')
 
 dotenv.config()
 const app = express()
@@ -21,4 +20,4 @@ app.use('/api/user', require('./routes/userRoutes'))
 app.use('/api/auth', require('./routes/auth'))
 app.use('/api', require('./routes/pdf'))
 
-module.exports.handler = ServerlessHttp(app)
+module.exports = app

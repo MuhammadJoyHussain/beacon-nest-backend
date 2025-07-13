@@ -220,7 +220,7 @@ exports.recommendJobsForUser = async (req, res) => {
     const user = await User.findById(id)
     if (!user) return res.status(404).json({ error: 'User not found' })
 
-    const response = await axiosClient.post('/recommend', {
+    const response = await axiosClient.post('http://localhost:5000/recommend', {
       skills: user.skills,
     })
 
