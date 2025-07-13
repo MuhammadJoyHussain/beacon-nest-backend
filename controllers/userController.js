@@ -1,4 +1,4 @@
-const axiosClient = require('../config/axiosClient')
+// const axiosClient = require('../config/axiosClient')
 const User = require('../models/User')
 const jwt = require('jsonwebtoken')
 
@@ -220,11 +220,11 @@ exports.recommendJobsForUser = async (req, res) => {
     const user = await User.findById(id)
     if (!user) return res.status(404).json({ error: 'User not found' })
 
-    const response = await axiosClient.post('http://localhost:5000/recommend', {
-      skills: user.skills,
-    })
+    // const response = await axiosClient.post('http://localhost:5000/recommend', {
+    //   skills: user.skills,
+    // })
 
-    res.json(response.data)
+    res.json(id)
   } catch (error) {
     console.error('Error recommending jobs for user:', error)
     res.status(500).json({ error: 'Internal server error' })
