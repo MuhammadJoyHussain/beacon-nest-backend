@@ -19,6 +19,11 @@ const VacancySchema = new mongoose.Schema({
   preferredQualifications: [{ type: String }],
   benefits: [{ type: String }],
   howToApply: { type: String },
+  employer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
   createdAt: { type: Date, default: Date.now },
 })
 

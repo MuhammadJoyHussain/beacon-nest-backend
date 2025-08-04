@@ -8,9 +8,12 @@ const {
   deleteManyVacancy,
   deleteVacancy,
   getRecommendations,
+  getVacanciesByEmployer,
 } = require('../controllers/vacancyController')
+const { protect, authorizeRoles } = require('../middlewares/authMiddleware')
 
 router.get('/', getVacancy)
+router.get('/:id', protect, authorizeRoles('employer'), getVacanciesByEmployer)
 router.post('/recommend', getRecommendations)
 router.post('/', createVacancies)
 router.post('/', createVacancy)

@@ -31,6 +31,7 @@ exports.getVacancy = async (req, res) => {
     }
 
     const vacancies = await Vacancy.find(query)
+      .populate('employer')
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(parseInt(limit))
@@ -41,6 +42,27 @@ exports.getVacancy = async (req, res) => {
       total,
       page: parseInt(page),
       pages: Math.ceil(total / limit),
+      results: vacancies,
+    })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+}
+
+exports.getVacanciesByEmployer = async (req, res) => {
+  try {
+    const employerId = req.params.id
+
+    if (!employerId) {
+      return res.status(400).json({ error: 'Employer ID is required' })
+    }
+
+    const vacancies = await Vacancy.find({ employer: employerId }).sort({
+      createdAt: -1,
+    })
+
+    res.json({
+      total: vacancies.length,
       results: vacancies,
     })
   } catch (err) {

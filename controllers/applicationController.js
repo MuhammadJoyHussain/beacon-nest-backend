@@ -1,4 +1,3 @@
-// controllers/applicationController.js
 const Application = require('../models/Application')
 const User = require('../models/User')
 
@@ -14,7 +13,6 @@ exports.getMyApplications = async (req, res) => {
   }
 }
 
-// Get a single application by ID
 exports.getApplicationById = async (req, res) => {
   try {
     const { id } = req.params
@@ -27,7 +25,6 @@ exports.getApplicationById = async (req, res) => {
       return res.status(404).json({ message: 'Application not found' })
     }
 
-    // Allow only the applicant or admin to view
     if (
       req.user.role !== 'admin' &&
       application.user._id.toString() !== req.user.id
@@ -54,7 +51,6 @@ exports.getSkillGap = async (req, res) => {
       return res.status(404).json({ message: 'Application not found' })
     }
 
-    // Authorization check
     if (
       req.user.role !== 'admin' &&
       application.user._id.toString() !== req.user.id
@@ -65,7 +61,6 @@ exports.getSkillGap = async (req, res) => {
     const jobSkills = application.job.skills || []
     const userSkills = application.user.skills || []
 
-    // Case-insensitive comparison
     const normalizedUserSkills = userSkills.map((skill) =>
       skill.toLowerCase().trim()
     )
@@ -135,7 +130,6 @@ exports.submitApplication = async (req, res) => {
   }
 }
 
-// Get all applications (admin/recruiter)
 exports.getApplicationsByJob = async (req, res) => {
   try {
     const { jobId } = req.params
@@ -151,7 +145,6 @@ exports.getApplicationsByJob = async (req, res) => {
   }
 }
 
-// Update an application (admin or user)
 exports.updateApplication = async (req, res) => {
   try {
     const { applicationId } = req.params
@@ -162,7 +155,6 @@ exports.updateApplication = async (req, res) => {
       return res.status(404).json({ message: 'Application not found' })
     }
 
-    // Optionally: Only allow admin or the applicant to update
     if (
       req.user.role !== 'admin' &&
       application.user.toString() !== req.user.id
@@ -178,10 +170,9 @@ exports.updateApplication = async (req, res) => {
       linkedIn: req.body.linkedIn,
       experienceYears: req.body.experienceYears,
       authorized: req.body.authorized,
-      status: req.body.status, // e.g., pending/approved/rejected
+      status: req.body.status,
     }
 
-    // Only update fields that were sent
     Object.keys(updates).forEach((key) => {
       if (updates[key] !== undefined) {
         application[key] = updates[key]
@@ -197,7 +188,6 @@ exports.updateApplication = async (req, res) => {
   }
 }
 
-// Delete an application (admin or the applicant)
 exports.deleteApplication = async (req, res) => {
   try {
     const { applicationId } = req.params
@@ -208,7 +198,6 @@ exports.deleteApplication = async (req, res) => {
       return res.status(404).json({ message: 'Application not found' })
     }
 
-    // Optional: Only allow admin or the applicant to delete
     if (
       req.user.role !== 'admin' &&
       application.user.toString() !== req.user.id

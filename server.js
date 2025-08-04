@@ -6,19 +6,19 @@ const connectDB = require('./config/db')
 dotenv.config()
 const app = express()
 
-// Middleware
+// Middlewares
 app.use(express.json())
 app.use(cors())
 connectDB()
 
 // Routes
-app.use('/api/candidate', require('./routes/candidate'))
-app.use('/api/vacancy', require('./routes/vacancy'))
-app.use('/api/application', require('./routes/application'))
-app.use('/api/course', require('./routes/course'))
-app.use('/api/auth', require('./routes/auth'))
-app.use('/api/admin', require('./routes/adminRoutes'))
-app.use('/api', require('./routes/pdf'))
+app.use('/api/candidate', require('./routes/candidateRoute'))
+app.use('/api/vacancy', require('./routes/vacancyRoute'))
+app.use('/api/application', require('./routes/applicationRoute'))
+app.use('/api/course', require('./routes/courseRoute'))
+app.use('/api/auth', require('./routes/authRoute'))
+app.use('/api/admin', require('./routes/adminRoute'))
+app.use('/api', require('./routes/pdfRoute'))
 
 const PORT = process.env.PORT || 5000
 

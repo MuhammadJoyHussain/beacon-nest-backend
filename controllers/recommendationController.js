@@ -1,9 +1,7 @@
-// controllers/recommendationController.js
 const axios = require('axios')
 const User = require('../models/User')
-const Job = require('../models/Job') // Assuming you have a Job model
+const Job = require('../models/Job')
 
-// Recommend jobs for a candidate based on their skills
 exports.recommendJobsForUser = async (req, res) => {
   try {
     const { id } = req.params
@@ -24,7 +22,6 @@ exports.recommendJobsForUser = async (req, res) => {
   }
 }
 
-// Recommend candidates for an employer based on job requirements
 exports.recommendCandidatesForEmployer = async (req, res) => {
   try {
     const { jobId } = req.params

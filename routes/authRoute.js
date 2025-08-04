@@ -4,8 +4,6 @@ const {
   registerUser,
   loginUser,
   updateUserProfile,
-  recommendJobsForUser,
-  createUsers,
 } = require('../controllers/authConrtoller')
 
 const { protect, authorizeRoles } = require('../middlewares/authMiddleware')
@@ -17,12 +15,5 @@ router.get('/profile', protect, (req, res) => {
   res.json(req.user)
 })
 router.put('/profile', protect, updateUserProfile)
-
-router.get(
-  '/recommend/:id',
-  protect,
-  authorizeRoles('user'),
-  recommendJobsForUser
-)
 
 module.exports = router

@@ -206,23 +206,3 @@ exports.deleteUserByAdmin = async (req, res) => {
     res.status(500).json({ message: 'Server error' })
   }
 }
-
-exports.recommendJobsForUser = async (req, res) => {
-  try {
-    const { id } = req.params
-    const user = await User.findById(id)
-    if (!user) return res.status(404).json({ error: 'User not found' })
-
-    const response = await axios.post(
-      'https://recommendar-37ri.onrender.com/recommend',
-      {
-        skills: user.skills,
-      }
-    )
-
-    res.json(response.data)
-  } catch (error) {
-    console.error('Error recommending jobs for user:', error)
-    res.status(500).json({ error: 'Internal server error' })
-  }
-}
