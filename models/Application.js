@@ -8,6 +8,10 @@ const applicationSchema = new mongoose.Schema(
       ref: 'Vacancy',
       required: true,
     },
+    cv: {
+      type: String,
+      required: false,
+    },
     status: { type: String, default: 'Under Review' },
     fullName: String,
     email: String,

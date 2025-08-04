@@ -1,6 +1,5 @@
 const Candidate = require('../models/Candidate')
 
-// Get all candidates
 const getCandidates = async (req, res) => {
   try {
     const candidates = await Candidate.find()
@@ -10,7 +9,6 @@ const getCandidates = async (req, res) => {
   }
 }
 
-// Get candidate by ID
 const getCandidate = async (req, res) => {
   try {
     const candidate = await Candidate.findById(req.params.id)
@@ -22,7 +20,6 @@ const getCandidate = async (req, res) => {
   }
 }
 
-// Create multiple candidates
 const createCandidates = async (req, res) => {
   try {
     const candidates = req.body
@@ -40,7 +37,6 @@ const createCandidates = async (req, res) => {
   }
 }
 
-// Create a new candidate
 const createCandidate = async (req, res) => {
   try {
     const { name, role, rating, reviews, description, skills, location, rate } =
@@ -64,7 +60,6 @@ const createCandidate = async (req, res) => {
   }
 }
 
-// Update candidate by ID
 const updateCandidate = async (req, res) => {
   try {
     const updatedCandidate = await Candidate.findByIdAndUpdate(
@@ -82,7 +77,6 @@ const updateCandidate = async (req, res) => {
   }
 }
 
-// Delete candidate by ID
 const deleteCandidate = async (req, res) => {
   try {
     const deletedCandidate = await Candidate.findByIdAndDelete(req.params.id)

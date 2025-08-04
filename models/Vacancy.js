@@ -10,6 +10,7 @@ const VacancySchema = new mongoose.Schema({
     default: 'Full-Time',
   },
   salary: { type: String, required: true },
+  skills: [{ type: String, required: true }],
   department: { type: String, required: true },
   companyOverview: { type: String },
   jobSummary: { type: String },

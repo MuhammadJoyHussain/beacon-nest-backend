@@ -17,11 +17,16 @@ const UserSchema = new mongoose.Schema({
   postcode: { type: String, required: true },
   country: { type: String, required: true },
 
-  position: {
-    type: String,
-    required: true,
-  },
-  position: { type: String, required: true },
+  experience: [
+    {
+      position: { type: String, required: true },
+      company: { type: String },
+      startDate: { type: Date },
+      endDate: { type: Date },
+      city: { type: String },
+      country: { type: String },
+    },
+  ],
   skills: [{ type: String, required: true }],
   startDate: { type: Date, required: true },
 
@@ -30,7 +35,7 @@ const UserSchema = new mongoose.Schema({
 
   role: {
     type: String,
-    enum: ['admin', 'user'],
+    enum: ['admin', 'employer', 'user'],
     default: 'user',
     required: true,
   },

@@ -1,5 +1,4 @@
-// const axiosClient = require('../config/axiosClient')
-const { default: axios } = require('axios')
+const axios = require('axios')
 const User = require('../models/User')
 const jwt = require('jsonwebtoken')
 
@@ -9,7 +8,6 @@ const generateToken = (user) => {
   })
 }
 
-// Register
 exports.registerUser = async (req, res) => {
   const {
     firstName,
@@ -31,7 +29,7 @@ exports.registerUser = async (req, res) => {
     shareCode,
     terms,
     gdpr,
-    role, // <- optionally allow role if from admin
+    role,
   } = req.body
 
   try {
@@ -81,11 +79,12 @@ exports.registerUser = async (req, res) => {
   }
 }
 
-// Login
 exports.loginUser = async (req, res) => {
   const { email, password } = req.body
+
   try {
     const user = await User.findOne({ email })
+
     if (!user || !(await user.matchPassword(password))) {
       return res.status(401).json({ message: 'Invalid credentials' })
     }
@@ -117,7 +116,6 @@ exports.updateUserProfile = async (req, res) => {
     const user = await User.findById(req.user._id)
     if (!user) return res.status(404).json({ message: 'User not found' })
 
-    // Allow updating only some fields
     const allowedUpdates = [
       'firstName',
       'lastName',
@@ -144,7 +142,6 @@ exports.updateUserProfile = async (req, res) => {
   }
 }
 
-// Update user by admin with restriction
 exports.updateUserByAdmin = async (req, res) => {
   try {
     const userIdToUpdate = req.params.id
@@ -154,14 +151,12 @@ exports.updateUserByAdmin = async (req, res) => {
     if (!userToUpdate)
       return res.status(404).json({ message: 'User not found' })
 
-    // Prevent admins from updating other admins (except self)
     if (userToUpdate.role === 'admin' && userIdToUpdate !== adminUserId) {
       return res
         .status(403)
         .json({ message: "Admins can't update other admin users" })
     }
 
-    // Allowed fields admin can update (including role)
     const allowedUpdates = [
       'firstName',
       'lastName',
@@ -189,7 +184,6 @@ exports.updateUserByAdmin = async (req, res) => {
   }
 }
 
-// Delete user by admin with restriction
 exports.deleteUserByAdmin = async (req, res) => {
   try {
     const userIdToDelete = req.params.id
@@ -199,7 +193,6 @@ exports.deleteUserByAdmin = async (req, res) => {
     if (!userToDelete)
       return res.status(404).json({ message: 'User not found' })
 
-    // Prevent deleting other admins
     if (userToDelete.role === 'admin' && userIdToDelete !== adminUserId) {
       return res
         .status(403)
@@ -214,7 +207,6 @@ exports.deleteUserByAdmin = async (req, res) => {
   }
 }
 
-// Recommend jobs (user only)
 exports.recommendJobsForUser = async (req, res) => {
   try {
     const { id } = req.params

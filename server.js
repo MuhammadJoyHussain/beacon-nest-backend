@@ -15,15 +15,15 @@ connectDB()
 app.use('/api/candidate', require('./routes/candidate'))
 app.use('/api/vacancy', require('./routes/vacancy'))
 app.use('/api/application', require('./routes/application'))
-app.use('/api/admin', require('./routes/adminRoutes'))
-app.use('/api/user', require('./routes/userRoutes'))
+app.use('/api/course', require('./routes/course'))
 app.use('/api/auth', require('./routes/auth'))
+app.use('/api/admin', require('./routes/adminRoutes'))
 app.use('/api', require('./routes/pdf'))
 
 const PORT = process.env.PORT || 5000
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`)
+  console.log(`Server running on http://localhost:${PORT}`)
 })
 
 module.exports = app

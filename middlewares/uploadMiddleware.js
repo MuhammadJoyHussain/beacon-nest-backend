@@ -1,6 +1,7 @@
 // middleware/uploadMiddleware.js
 const multer = require('multer')
+const cloudinaryStorage = require('./cloudinaryStorage')
 
-const upload = multer({ dest: 'upload' })
+const cloudinaryUpload = multer({ cloudinaryStorage })
 
-module.exports = upload
+module.exports = cloudinaryUpload

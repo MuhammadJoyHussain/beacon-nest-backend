@@ -7,11 +7,16 @@ const {
   getApplicationsByJob,
   updateApplication,
   deleteApplication,
+  getApplicationById,
+  getSkillGap,
 } = require('../controllers/applicationController')
 const { protect, authorizeRoles } = require('../middlewares/authMiddleware')
+const cloudinaryUpload = require('../middlewares/uploadMiddleware')
 
 router.get('/my', protect, getMyApplications)
-router.post('/', protect, submitApplication)
+router.get('/:id', protect, getApplicationById)
+router.get('/:id/skill-gap', protect, getSkillGap)
+router.post('/', protect, cloudinaryUpload.single('cv'), submitApplication)
 router.get(
   '/job/:jobId',
   protect,
