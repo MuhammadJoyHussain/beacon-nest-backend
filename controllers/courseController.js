@@ -3,22 +3,22 @@ const Course = require('../models/Course')
 exports.getCoursesBySkills = async (req, res) => {
   try {
     const skillQuery = req.query.skills
+    let courses
 
-    if (!skillQuery) {
-      return res
-        .status(400)
-        .json({ error: 'Please provide skills query param' })
+    if (skillQuery) {
+      const skills = skillQuery
+        .split(',')
+        .map((skill) => skill.trim().toLowerCase())
+
+      courses = await Course.find({
+        skill: { $in: skills },
+      })
+    } else {
+      // No skills provided, return all courses
+      courses = await Course.find({})
     }
 
-    const skills = skillQuery
-      .split(',')
-      .map((skill) => skill.trim().toLowerCase())
-
-    const matchedCourses = await Course.find({
-      skill: { $in: skills },
-    })
-
-    res.json(matchedCourses)
+    res.json(courses)
   } catch (error) {
     console.error('Error fetching courses:', error)
     res.status(500).json({ error: 'Server error' })

@@ -13,12 +13,18 @@ const {
 const { protect, authorizeRoles } = require('../middlewares/authMiddleware')
 
 router.get('/', getVacancy)
-router.get('/:id', protect, authorizeRoles('employer'), getVacanciesByEmployer)
+router.get(
+  '/employer/:id',
+  protect,
+  authorizeRoles('employer'),
+  getVacanciesByEmployer
+)
+router.get('/:id', getVacancyById)
 router.post('/recommend', getRecommendations)
 router.post('/', createVacancies)
 router.post('/', createVacancy)
 router.delete('/', deleteManyVacancy)
-router.get('/:id', getVacancyById)
+
 router.delete('/:id', deleteVacancy)
 
 module.exports = router

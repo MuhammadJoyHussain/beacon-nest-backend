@@ -6,10 +6,28 @@ exports.getMyApplications = async (req, res) => {
     const applications = await Application.find({ user: req.user.id }).populate(
       'job'
     )
+
     res.json(applications)
   } catch (error) {
     console.error(error)
     res.status(500).json({ message: 'Failed to fetch applications' })
+  }
+}
+
+exports.getApplications = async (req, res) => {
+  try {
+    const application = await Application.find()
+      .populate('user', '-password')
+      .populate('job')
+
+    if (!application) {
+      return res.status(404).json({ message: 'Application not found' })
+    }
+
+    res.status(200).json(application)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Failed to fetch application' })
   }
 }
 
@@ -36,6 +54,39 @@ exports.getApplicationById = async (req, res) => {
   } catch (err) {
     console.error(err)
     res.status(500).json({ message: 'Failed to fetch application' })
+  }
+}
+
+exports.getApplicantsByJob = async (req, res) => {
+  try {
+    const jobId = req.params.jobId
+    const employerId = req.user._id
+
+    const job = await Vacancy.findById(jobId)
+
+    if (!job) {
+      return res.status(404).json({ success: false, message: 'Job not found' })
+    }
+
+    if (job.employer.toString() !== employerId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: 'You are not authorized to view applicants for this job',
+      })
+    }
+
+    const applications = await Application.find({ job: jobId })
+      .populate('user', 'name email role')
+      .sort({ createdAt: -1 })
+
+    res.status(200).json({
+      success: true,
+      count: applications.length,
+      applicants: applications,
+    })
+  } catch (err) {
+    console.error('Error fetching applicants:', err)
+    res.status(500).json({ success: false, message: 'Server Error' })
   }
 }
 
@@ -110,9 +161,6 @@ exports.submitApplication = async (req, res) => {
     const application = await Application.create({
       user: user._id,
       job: jobId,
-      fullName: `${user.firstName} ${user.lastName}`,
-      email: user.email,
-      phone: user.phone,
       coverLetter,
       additionalInfo,
       expectedSalary,

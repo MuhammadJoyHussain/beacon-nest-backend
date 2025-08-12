@@ -4,9 +4,12 @@ const {
   registerUser,
   loginUser,
   updateUserProfile,
+  getAllUsers,
 } = require('../controllers/authConrtoller')
 
 const { protect, authorizeRoles } = require('../middlewares/authMiddleware')
+
+router.get('/', getAllUsers)
 
 router.post('/register', registerUser)
 router.post('/login', loginUser)

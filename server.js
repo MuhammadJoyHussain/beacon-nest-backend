@@ -12,7 +12,6 @@ app.use(cors())
 connectDB()
 
 // Routes
-app.use('/api/candidate', require('./routes/candidateRoute'))
 app.use('/api/vacancy', require('./routes/vacancyRoute'))
 app.use('/api/application', require('./routes/applicationRoute'))
 app.use('/api/course', require('./routes/courseRoute'))
