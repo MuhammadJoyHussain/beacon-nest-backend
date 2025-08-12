@@ -25,11 +25,12 @@ exports.recommendJobsForUser = async (req, res) => {
 exports.recommendCandidatesForEmployer = async (req, res) => {
   try {
     const { jobId } = req.params
+
     const job = await Job.findById(jobId)
     if (!job) return res.status(404).json({ error: 'Job not found' })
 
     const response = await axios.post(
-      'https://recommendar-37ri.onrender.com/recommend-user',
+      'https://recommendar-37ri.onrender.com/recommend-users',
       {
         skills: job.skills,
       }
