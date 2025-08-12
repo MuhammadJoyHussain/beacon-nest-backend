@@ -6,9 +6,9 @@ const {
 } = require('../controllers/recommendationController')
 const { protect, authorizeRoles } = require('../middlewares/authMiddleware')
 
-router.get('/:id', protect, recommendJobsForUser)
+router.post('/:id', protect, recommendJobsForUser)
 
-router.get(
+router.post(
   '/',
   protect,
   authorizeRoles('admin'),
