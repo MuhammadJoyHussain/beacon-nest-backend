@@ -70,15 +70,6 @@ exports.getVacanciesByEmployer = async (req, res) => {
   }
 }
 
-exports.createVacancies = async (req, res) => {
-  try {
-    const vacancies = await Vacancy.insertMany(req.body)
-    res.status(201).json(vacancies)
-  } catch (err) {
-    res.status(400).json({ error: err.message })
-  }
-}
-
 exports.createVacancy = async (req, res) => {
   try {
     const vacancy = new Vacancy(req.body)

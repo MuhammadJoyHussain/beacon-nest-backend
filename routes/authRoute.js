@@ -17,6 +17,7 @@ router.post('/login', loginUser)
 router.get('/profile', protect, (req, res) => {
   res.json(req.user)
 })
+
 router.put('/profile', protect, updateUserProfile)
 
 module.exports = router

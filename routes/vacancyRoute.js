@@ -2,7 +2,6 @@ const express = require('express')
 const router = express.Router()
 const {
   getVacancy,
-  createVacancies,
   createVacancy,
   getVacancyById,
   deleteManyVacancy,
@@ -21,10 +20,8 @@ router.get(
 )
 router.get('/:id', getVacancyById)
 router.post('/recommend', getRecommendations)
-router.post('/', createVacancies)
 router.post('/', createVacancy)
 router.delete('/', deleteManyVacancy)
-
 router.delete('/:id', deleteVacancy)
 
 module.exports = router

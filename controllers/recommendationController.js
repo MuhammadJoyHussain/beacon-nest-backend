@@ -1,6 +1,6 @@
 const axios = require('axios')
 const User = require('../models/User')
-const Job = require('../models/Job')
+const Job = require('../models/Vacancy')
 
 exports.recommendJobsForUser = async (req, res) => {
   try {
