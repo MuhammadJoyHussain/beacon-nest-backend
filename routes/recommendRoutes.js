@@ -4,7 +4,7 @@ const {
   recommendJobsForUser,
   recommendCandidatesForEmployer,
 } = require('../controllers/recommendationController')
-const { authorizeRoles } = require('../middlewares/authMiddleware')
+const { protect, authorizeRoles } = require('../middlewares/authMiddleware')
 
 router.get('/:id', protect, recommendJobsForUser)
 
@@ -14,3 +14,5 @@ router.get(
   authorizeRoles('admin'),
   recommendCandidatesForEmployer
 )
+
+module.exports = router
